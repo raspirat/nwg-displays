@@ -1,7 +1,7 @@
 [Desktop Entry]
 Type=Application
 
-Name=Displays Settings
+Name=Display Settings (nwg)
 Name[pl]=Ustawienia wyświetlaczy
 
 GenericName=Output configuration utility
@@ -13,4 +13,4 @@ Comment[pl]=Narzędzie nwg-shell do konfiguracji monitorów
 Exec=nwg-displays
 Icon=nwg-displays
 Terminal=false
-Categories=Settings;DesktopSettings;
+Categories=Settings;DesktopSettings

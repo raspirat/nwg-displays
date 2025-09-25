@@ -16,6 +16,7 @@ Thank you, Kurt Jacobson!
 import argparse
 import shutil
 import stat
+import re
 import sys
 import threading
 import gi
@@ -89,10 +90,13 @@ elif niri:
         create_empty_file(os.path.join(niri_config_dir, name))
 else:
     eprint("[Error] Neither sway, Hyprland nor niri detected, terminating")
+if not hypr and not sway:
+    eprint("Neither sway nor Hyprland detected, terminating")
     sys.exit(1)
 
 config = {}
 outputs_path = ""
+default_file = ""
 num_ws = 0
 
 """
@@ -999,6 +1003,13 @@ def count_down(label, backup, path):
 def keep_current_settings(btn, config_dir=None, profile_name=None):
     if src_tag > 0:
         GLib.Source.remove(src_tag)
+    config_path = os.path.join(hypr_config_dir, "hyprland.conf")
+    line = f"source={default_file}\n"
+
+    with open(config_path, "a+") as f:
+        f.seek(0, 2)
+        if f.tell() == 0 or open(config_path).readlines()[-1] != line:
+            f.write(line)
     confirm_win.close()
 
     if os.getenv("NIRI_SOCKET"):
@@ -1051,6 +1062,8 @@ def restore_old_settings(btn, backup, path):
                 save_list_to_text_file(backup[1], lua_path)
         else:
             save_list_to_text_file(backup, path)
+        # save_list_to_text_file(backup, path)
+        os.remove(path)
         confirm_win.close()
         # Don't execute any command here, just save the file and wait for Hyprland to notice and apply the change.
         # Let's give it some time to do it before refreshing UI.
@@ -1091,6 +1104,13 @@ def main():
         )
 
     elif hypr:
+        next = max([int(match.group(1)) for f in os.listdir(hypr_config_dir)
+                       if (match :=
+                           re.compile(r"monitors_(\d+)\.conf").match(f))]) + 1
+        global default_file
+        default_file = f"monitors_{next}.conf"
+        default_path = os.path.join(hypr_config_dir, default_file)
+
         parser.add_argument(
             "-m",
             "--monitors_path",
@@ -1099,6 +1119,8 @@ def main():
             help="path to save the monitors.conf file to, default: {}".format(
                 "{}/monitors.conf".format(hypr_config_dir)
             ),
+            default=default_path,
+            help=f"path to save the monitors.conf file to, default: {default_path}"
         )
 
         parser.add_argument(
