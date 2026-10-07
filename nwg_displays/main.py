@@ -1003,7 +1003,7 @@ def count_down(label, backup, path):
 def keep_current_settings(btn, config_dir=None, profile_name=None):
     if src_tag > 0:
         GLib.Source.remove(src_tag)
-    config_path = os.path.join(hypr_config_dir, "hyprland.conf")
+    config_path = os.path.join(hypr_config_dir, "hyprland.lua")
     line = f"source={default_file}\n"
 
     with open(config_path, "a+") as f:
@@ -1106,30 +1106,29 @@ def main():
     elif hypr:
         next = max([int(match.group(1)) for f in os.listdir(hypr_config_dir)
                        if (match :=
-                           re.compile(r"monitors_(\d+)\.conf").match(f))]) + 1
+                           re.compile(r"monitors_(\d+)\.lua").match(f))]) + 1
         global default_file
-        default_file = f"monitors_{next}.conf"
+        default_file = f"monitors_{next}.lua"
         default_path = os.path.join(hypr_config_dir, default_file)
 
         parser.add_argument(
             "-m",
             "--monitors_path",
             type=str,
-            default="{}/monitors.conf".format(hypr_config_dir),
-            help="path to save the monitors.conf file to, default: {}".format(
-                "{}/monitors.conf".format(hypr_config_dir)
+            # default="{}/monitors.lua".format(hypr_config_dir),
+            help="path to save the monitors.lua file to, default: {}".format(
+                "{}/monitors.lua".format(hypr_config_dir)
             ),
             default=default_path,
-            help=f"path to save the monitors.conf file to, default: {default_path}"
         )
 
         parser.add_argument(
             "-w",
             "--workspaces_path",
             type=str,
-            default="{}/workspaces.conf".format(hypr_config_dir),
-            help="path to save the workspaces.conf file to, default: {}".format(
-                "{}/workspaces.conf".format(hypr_config_dir)
+            default="{}/workspaces.lua".format(hypr_config_dir),
+            help="path to save the workspaces.lua file to, default: {}".format(
+                "{}/workspaces.lua".format(hypr_config_dir)
             ),
         )
 
